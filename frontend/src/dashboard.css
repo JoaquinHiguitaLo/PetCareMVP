@@ -1,0 +1,147 @@
+.dashboard-page {
+  min-height: 100vh;
+  padding: 30px;
+  background: linear-gradient(135deg, #3ec6d3, #5b86e5);
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  margin-bottom: 25px;
+  gap: 12px;
+}
+
+.dashboard-title {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+.dashboard-back-button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.dashboard-card {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  box-sizing: border-box;
+}
+
+.dashboard-card h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 2rem;
+}
+
+.dashboard-input,
+.dashboard-textarea,
+.dashboard-select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+.dashboard-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.dashboard-button {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #36d1dc;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.dashboard-item {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.dashboard-item p {
+  margin: 0 0 10px 0;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dashboard-card p {
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+
+@media (max-width: 768px) {
+  .dashboard-page {
+    padding: 16px;
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-title {
+    font-size: 2rem;
+  }
+
+  .dashboard-back-button {
+    width: 100%;
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-card {
+    padding: 18px;
+  }
+
+  .dashboard-card h2 {
+    font-size: 1.6rem;
+  }
+
+  .dashboard-button {
+    width: 100%;
+  }
+  .dashboard-card p {
+    font-size: 0.95rem;
+  }
+  .dashboard-actions {
+    flex-direction: column;
+  }
+
+  .dashboard-actions .dashboard-button {
+    width: 100%;
+  }
+}
