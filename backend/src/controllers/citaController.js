@@ -103,3 +103,25 @@ exports.completarCita = async (req, res) => {
     res.status(500).json({ error: "Error completando cita" });
   }
 };
+
+exports.eliminarCita = async (req, res) => {
+  try {
+    const cita = await citaService.eliminarCita(req.params.id);
+
+    res.json({
+      message: "Cita eliminada",
+      cita
+    });
+  } catch (error) {
+    console.error("ERROR ELIMINANDO CITA:", error);
+
+    if (
+      error.message === "Cita no encontrada" ||
+      error.message === "Solo se pueden eliminar citas canceladas"
+    ) {
+      return res.status(400).json({ error: error.message });
+    }
+
+    res.status(500).json({ error: "Error eliminando cita" });
+  }
+};

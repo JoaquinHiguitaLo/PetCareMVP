@@ -91,6 +91,32 @@ function PetMisCitas() {
     }
   };
 
+  const eliminarCita = async (id) => {
+    const confirmar = window.confirm("¿Eliminar esta cita cancelada?");
+    if (!confirmar) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/citas/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setCitas((prev) => prev.filter((cita) => cita.id !== id));
+        alert("Cita eliminada correctamente");
+      } else {
+        alert(data.error || "No se pudo eliminar la cita");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error conectando con el servidor");
+    }
+  };
+
   return (
     <>
       {loading && <LoadingModal text="Cargando citas..." />}
@@ -108,7 +134,7 @@ function PetMisCitas() {
           ) : (
             citas.map((cita) => (
               <div key={cita.id} className="pet-cita-item">
-                <h3>{cita.servicio_nombre}</h3>
+                <h3>{cita.servicio}</h3>
 
                 <p>
                   📅{" "}
@@ -123,18 +149,40 @@ function PetMisCitas() {
                   })}
                 </p>
 
-                <p>🐾 {cita.mascota_nombre}</p>
+                <p>🐾 {cita.mascota}</p>
+                <p>🏥 {cita.empresa}</p>
 
-                <p className="pet-cita-status">
-                  Estado: {cita.estado || "pendiente"}
+                <p
+                  className="pet-cita-status"
+                  style={{
+                    color:
+                      cita.estado === "pendiente"
+                        ? "#f39c12"
+                        : cita.estado === "confirmada"
+                          ? "#27ae60"
+                          : cita.estado === "cancelada"
+                            ? "#e74c3c"
+                            : "#3498db",
+                    fontWeight: "bold"
+                  }}
+                >
+                  Estado: {cita.estado}
                 </p>
 
-                {cita.estado !== "cancelada" && (
+                {cita.estado === "pendiente" && (
                   <button
                     className="pet-cita-cancel-button"
                     onClick={() => cancelarCita(cita)}
                   >
                     Cancelar cita
+                  </button>
+                )}
+                {cita.estado === "cancelada" && (
+                  <button
+                    className="pet-cita-delete-button"
+                    onClick={() => eliminarCita(cita.id)}
+                  >
+                    🗑️ Eliminar
                   </button>
                 )}
               </div>

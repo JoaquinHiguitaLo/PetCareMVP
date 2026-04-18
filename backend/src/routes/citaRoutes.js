@@ -7,7 +7,8 @@ const {
   cancelarCita,
   getCitasPorEmpresa,
   confirmarCita,
-  completarCita
+  completarCita,
+  eliminarCita
 } = require("../controllers/citaController");
 
 router.post("/", crearCita);
@@ -16,5 +17,6 @@ router.get("/empresa/:empresa_id", getCitasPorEmpresa);
 router.put("/:id/cancelar", cancelarCita);
 router.put("/:id/confirmar", confirmarCita);
 router.put("/:id/completar", completarCita);
+router.delete("/:id", eliminarCita);
 
 module.exports = router;

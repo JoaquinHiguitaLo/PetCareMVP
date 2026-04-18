@@ -130,3 +130,12 @@ exports.completar = async (id) => {
 
   return result.rows[0];
 };
+
+exports.eliminar = async (id) => {
+  const result = await pool.query(
+    "DELETE FROM citas WHERE id = $1 RETURNING *",
+    [id]
+  );
+
+  return result.rows[0];
+};

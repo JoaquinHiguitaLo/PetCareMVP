@@ -77,3 +77,17 @@ exports.completarCita = async (id) => {
 
   return await citaRepository.completar(id);
 };
+
+exports.eliminarCita = async (id) => {
+  const cita = await citaRepository.obtenerPorId(id);
+
+  if (!cita) {
+    throw new Error("Cita no encontrada");
+  }
+
+  if (cita.estado !== "cancelada") {
+    throw new Error("Solo se pueden eliminar citas canceladas");
+  }
+
+  return await citaRepository.eliminar(id);
+};

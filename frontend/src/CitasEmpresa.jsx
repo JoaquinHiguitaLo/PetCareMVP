@@ -22,7 +22,7 @@ function CitasEmpresa() {
 
       if (Array.isArray(data)) {
         setEmpresas(data);
-        if (data.length > 0) {
+        if (data.length > 0 && !empresaSeleccionada) {
           setEmpresaSeleccionada(String(data[0].id));
         }
       }
@@ -35,7 +35,11 @@ function CitasEmpresa() {
     if (!empresaId) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/citas/empresa/${empresaId}`);
+      const res = await fetch(`${API_URL}/api/citas/empresa/${empresaId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       const data = await res.json();
       setCitas(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -56,7 +60,10 @@ function CitasEmpresa() {
   const confirmarCita = async (id) => {
     try {
       const res = await fetch(`${API_URL}/api/citas/${id}/confirmar`, {
-        method: "PUT"
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       const data = await res.json();
@@ -79,7 +86,10 @@ function CitasEmpresa() {
 
     try {
       const res = await fetch(`${API_URL}/api/citas/${id}/cancelar`, {
-        method: "PUT"
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       const data = await res.json();
@@ -102,7 +112,10 @@ function CitasEmpresa() {
 
     try {
       const res = await fetch(`${API_URL}/api/citas/${id}/completar`, {
-        method: "PUT"
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       const data = await res.json();
@@ -129,6 +142,32 @@ function CitasEmpresa() {
 
   const formatearFecha = (fecha) => {
     return new Date(fecha).toLocaleString();
+  };
+
+  const eliminarCita = async (id) => {
+    const confirmar = window.confirm("¿Eliminar esta cita cancelada?");
+    if (!confirmar) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/citas/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Cita eliminada correctamente");
+        cargarCitas(empresaSeleccionada);
+      } else {
+        alert(data.error || "No se pudo eliminar");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error conectando con el servidor");
+    }
   };
 
   return (
@@ -212,6 +251,15 @@ function CitasEmpresa() {
                         Cancelar cita
                       </button>
                     </>
+                  )}
+                  {cita.estado === "cancelada" && (
+                    <button
+                      className="dashboard-button"
+                      style={{ background: "#6b7280" }}
+                      onClick={() => eliminarCita(cita.id)}
+                    >
+                      🗑️ Eliminar
+                    </button>
                   )}
                 </div>
               </div>

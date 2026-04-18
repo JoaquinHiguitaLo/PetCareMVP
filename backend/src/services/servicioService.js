@@ -7,7 +7,7 @@ exports.crearServicio = async (data, usuario_id) => {
     throw new Error("Empresa no encontrada");
   }
 
-  if (empresa.usuario_id !== usuario_id) {
+  if (Number(empresa.usuario_id) !== Number(usuario_id)) {
     throw new Error("No autorizado");
   }
 
@@ -31,7 +31,7 @@ exports.crearServicio = async (data, usuario_id) => {
 };
 
 exports.obtenerServiciosPorEmpresa = async (empresaId) => {
-  return await servicioRepository.obtenerPorEmpresa(empresaId);
+  return await servicioRepository.obtenerServiciosPorEmpresa(empresaId);
 };
 
 exports.obtenerTodosLosServicios = async () => {
@@ -45,24 +45,17 @@ exports.eliminarServicio = async (id, usuario_id) => {
     throw new Error("Servicio no encontrado");
   }
 
-  if (servicio.usuario_id !== usuario_id) {
+  const empresa = await servicioRepository.obtenerEmpresaPorId(servicio.empresa_id);
+
+  if (!empresa) {
+    throw new Error("Empresa no encontrada");
+  }
+
+  if (Number(empresa.usuario_id) !== Number(usuario_id)) {
     throw new Error("No autorizado");
   }
 
   return await servicioRepository.eliminar(id);
-};
-
-exports.obtenerPorEmpresaYNombre = async (empresaId, nombre) => {
-  const result = await pool.query(
-    "SELECT * FROM servicios WHERE empresa_id = $1 AND nombre = $2",
-    [empresaId, nombre]
-  );
-
-  return result.rows[0];
-};
-
-exports.obtenerServiciosPorEmpresa = async (empresaId) => {
-  return await servicioRepository.obtenerServiciosPorEmpresa(empresaId);
 };
 
 exports.actualizarServicio = async (id, data, usuario_id) => {
