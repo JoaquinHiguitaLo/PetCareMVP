@@ -16,5 +16,6 @@ router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.put("/reset-password", resetPassword);
 router.put("/update-profile", updateProfile);
+router.post("/request-reset-code", requestResetCode)
 
 module.exports = router;

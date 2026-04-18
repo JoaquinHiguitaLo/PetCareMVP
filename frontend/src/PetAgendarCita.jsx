@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {showError, showSucces} from "./utils/alerts";
 import PetOwnerLayout from "./components/PetOwnerLayout";
 import LoadingModal from "./components/LoadingModal";
 import "./petOwner.css";
@@ -57,7 +58,7 @@ function PetAgendarCita() {
       }
     } catch (error) {
       console.error(error);
-      alert("Error cargando la información para agendar");
+      showError("Error","Error cargando la información para agendar");
     } finally {
       setLoading(false);
     }
@@ -103,15 +104,15 @@ function PetAgendarCita() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Cita agendada correctamente");
+        showSuccess("Cita agendada","Cita agendada correctamente");
         navigate("/pet/mis-citas");
       } else {
-        alert(data.error || "Error agendando cita");
+        showError("Error", data.error || "Error agendando cita");
         setGuardando(false);
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error", "Error conectando con el servidor");
       setGuardando(false);
     }
   };

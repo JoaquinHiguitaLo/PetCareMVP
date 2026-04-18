@@ -48,11 +48,29 @@ exports.obtenerCitasPorEmpresa = async (empresa_id) => {
   return await citaRepository.obtenerPorEmpresa(empresa_id);
 };
 
-exports.cancelarCita = async (id) => {
+exports.cancelarCita = async (id, rolUsuario) => {
   const cita = await citaRepository.obtenerPorId(id);
 
   if (!cita) {
     throw new Error("Cita no encontrada");
+  }
+
+  const fechaCita = new Date(cita.fecha);
+  const ahora = new Date();
+
+  const diferenciaHoras = (fechaCita - ahora) / (1000 * 60 * 60);
+
+  // reglas diferentes según rol
+  if (rolUsuario === "pet_owner" && diferenciaHoras < 3) {
+    throw new Error(
+      "No puedes cancelar una cita con menos de 3 horas de anticipación"
+    );
+  }
+
+  if (rolUsuario === "business" && diferenciaHoras < 12) {
+    throw new Error(
+      "La empresa no puede cancelar una cita con menos de 12 horas de anticipación"
+    );
   }
 
   return await citaRepository.cancelar(id);

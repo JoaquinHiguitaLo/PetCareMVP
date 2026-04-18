@@ -85,35 +85,32 @@ exports.loginUser = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
   try {
-    const { email, nuevaPassword } = req.body;
+    const { email, codigo, nuevaPassword } = req.body;
 
-    if (!email || !nuevaPassword) {
+    if (!email || !codigo || !nuevaPassword) {
       return res.status(400).json({
-        error: "Correo y nueva contraseña son obligatorios"
+        error: "Email, código y nueva contraseña son obligatorios"
       });
     }
 
-    const hashedPassword = await bcrypt.hash(nuevaPassword, 10);
-
-    const result = await pool.query(
-      `UPDATE users
-       SET password = $1
-       WHERE email = $2
-       RETURNING id, email`,
-      [hashedPassword, email]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({
-        error: "No existe un usuario con ese correo"
-      });
-    }
+    await userService.resetPassword(email, codigo, nuevaPassword);
 
     res.json({
       message: "Contraseña actualizada correctamente"
     });
+
   } catch (error) {
     console.error(error);
+
+    if (
+      error.message === "Usuario no encontrado" ||
+      error.message === "Código inválido o expirado"
+    ) {
+      return res.status(400).json({
+        error: error.message
+      });
+    }
+
     res.status(500).json({
       error: "Error restableciendo contraseña"
     });
@@ -155,6 +152,20 @@ exports.updateProfile = async (req, res) => {
     console.error(error);
     res.status(500).json({
       error: "Error actualizando perfil"
+    });
+  }
+};
+
+exports.requestResetCode = async (req, res) => {
+  try {
+    await userService.solicitarCodigoReset(req.body.email);
+
+    res.json({
+      message: "Código enviado al correo"
+    });
+  } catch (error) {
+    res.status(400).json({
+      error: error.message
     });
   }
 };

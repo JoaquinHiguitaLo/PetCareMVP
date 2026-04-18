@@ -7,11 +7,48 @@ function ForgotPassword() {
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
 
+  const [step, setStep] = useState(1);
+
   const [email, setEmail] = useState("");
+  const [codigo, setCodigo] = useState("");
   const [nuevaPassword, setNuevaPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const handleSendCode = async (e) => {
+    e.preventDefault();
+
+    if (loading) return;
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${API_URL}/api/users/request-reset-code`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        await showSuccess(
+          "Código enviado",
+          "Revisa tu correo e ingresa el código de verificación"
+        );
+        setStep(2);
+      } else {
+        showError("Error", data.error || "No se pudo enviar el código");
+      }
+    } catch (error) {
+      console.error(error);
+      showError("Error", "Error conectando con el servidor");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleResetPassword = async (e) => {
     e.preventDefault();
@@ -33,6 +70,7 @@ function ForgotPassword() {
         },
         body: JSON.stringify({
           email,
+          codigo,
           nuevaPassword
         })
       });
@@ -47,11 +85,11 @@ function ForgotPassword() {
         navigate("/");
       } else {
         showError("Error", data.error || "Error restableciendo contraseña");
-        setLoading(false);
       }
     } catch (error) {
       console.error(error);
       showError("Error", "Error conectando con el servidor");
+    } finally {
       setLoading(false);
     }
   };
@@ -66,54 +104,97 @@ function ForgotPassword() {
         </h1>
 
         <p className="login-subtitle" style={{ fontSize: "1.1rem" }}>
-          Ingresa tu correo y define una nueva contraseña
+          {step === 1
+            ? "Ingresa tu correo para recibir un código"
+            : "Ingresa el código y define una nueva contraseña"}
         </p>
 
-        <form onSubmit={handleResetPassword} className="login-form">
-          <div className="login-input-group">
-            <span className="login-input-icon">✉️</span>
-            <input
-              type="email"
-              placeholder="Correo electrónico"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
+        {step === 1 ? (
+          <form onSubmit={handleSendCode} className="login-form">
+            <div className="login-input-group">
+              <span className="login-input-icon">✉️</span>
+              <input
+                type="email"
+                placeholder="Correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
 
-          <div className="login-input-group">
-            <span className="login-input-icon">🔒</span>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Nueva contraseña"
-              value={nuevaPassword}
-              onChange={(e) => setNuevaPassword(e.target.value)}
-              required
-            />
-          </div>
+            <button type="submit" className="login-submit-btn" disabled={loading}>
+              {loading ? "Enviando código..." : "Enviar código"}
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleResetPassword} className="login-form">
+            <div className="login-input-group">
+              <span className="login-input-icon">✉️</span>
+              <input
+                type="email"
+                placeholder="Correo electrónico"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                readOnly
+              />
+            </div>
 
-          <div className="login-input-group">
-            <span className="login-input-icon">🔒</span>
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Confirmar nueva contraseña"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
+            <div className="login-input-group">
+              <span className="login-input-icon">🔢</span>
+              <input
+                type="text"
+                placeholder="Código de verificación"
+                value={codigo}
+                onChange={(e) => setCodigo(e.target.value)}
+                maxLength={6}
+                required
+              />
+            </div>
+
+            <div className="login-input-group">
+              <span className="login-input-icon">🔒</span>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Nueva contraseña"
+                value={nuevaPassword}
+                onChange={(e) => setNuevaPassword(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="login-input-group">
+              <span className="login-input-icon">🔒</span>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Confirmar nueva contraseña"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="login-password-toggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </button>
+            </div>
+
+            <button type="submit" className="login-submit-btn" disabled={loading}>
+              {loading ? "Actualizando..." : "Guardar nueva contraseña"}
+            </button>
+
             <button
               type="button"
-              className="login-password-toggle"
-              onClick={() => setShowPassword((prev) => !prev)}
+              className="dashboard-button"
+              style={{ background: "#6b7280" }}
+              onClick={() => setStep(1)}
             >
-              {showPassword ? "🙈" : "👁️"}
+              Volver
             </button>
-          </div>
-
-          <button type="submit" className="login-submit-btn" disabled={loading}>
-            {loading ? "Actualizando..." : "Guardar nueva contraseña"}
-          </button>
-        </form>
+          </form>
+        )}
 
         <p className="login-register-text">
           ¿Recordaste tu contraseña?{" "}
