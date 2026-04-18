@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { showError } from "./utils/alerts";
 import "./App.css";
 
 function App() {
@@ -38,12 +39,12 @@ function App() {
           navigate("/pet/home");
         }
       } else {
-        alert(data.error || "Error en login");
+        showError("Error", data.error || "Error en login");
         setLoading(false);
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error", "Error conectando con el servidor");
       setLoading(false);
     }
   };

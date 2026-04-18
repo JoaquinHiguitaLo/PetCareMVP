@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "./DashboardLayout";
+import { showConfirm, showError, showSuccess } from "./utils/alerts";
 import "./dashboard.css";
 
 function MisServicios() {
@@ -111,10 +112,11 @@ function MisServicios() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(
+        await showSuccess(
+          editandoId ? "Servicio actualizado" : "Servicio creado",
           editandoId
-            ? "Servicio actualizado correctamente"
-            : "Servicio creado correctamente"
+            ? "El servicio se actualizó correctamente"
+            : "El servicio se registró correctamente"
         );
 
         setForm({
@@ -129,17 +131,21 @@ function MisServicios() {
         setEditandoId(null);
         cargarServicios(empresaSeleccionada);
       } else {
-        alert(data.error || "Error guardando servicio");
+        showError("Error", data.error || "Error guardando servicio");
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error", "Error conectando con el servidor");
     }
   };
 
   const handleEliminar = async (id) => {
-    const confirmar = window.confirm("¿Seguro que deseas eliminar este servicio?");
-    if (!confirmar) return;
+    const result = await showConfirm(
+      "¿Eliminar servicio?",
+      "Esta acción no se puede deshacer"
+    );
+
+    if (!result.isConfirmed) return;
 
     try {
       const res = await fetch(`${API_URL}/api/servicios/${id}`, {
@@ -152,16 +158,19 @@ function MisServicios() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Servicio eliminado correctamente");
+        await showSuccess(
+          "Servicio eliminado",
+          "El servicio se eliminó correctamente"
+        );
         cargarServicios(empresaSeleccionada);
       } else {
-        alert(data.error || "Error eliminando servicio");
+        showError("Error", data.error || "Error eliminando servicio");
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error", "Error conectando con el servidor");
     }
-  };
+};
 
   return (
     <DashboardLayout title="💼 Mis servicios">

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "./DashboardLayout";
+import { showConfirm, showError, showSuccess, showWarning } from "./utils/alerts";
 import "./dashboard.css";
 
 function CitasEmpresa() {
@@ -28,6 +29,7 @@ function CitasEmpresa() {
       }
     } catch (error) {
       console.error(error);
+      showError("Error", "No se pudieron cargar las empresas");
     }
   };
 
@@ -44,6 +46,7 @@ function CitasEmpresa() {
       setCitas(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error(error);
+      showError("Error", "No se pudieron cargar las citas");
     }
   };
 
@@ -58,6 +61,13 @@ function CitasEmpresa() {
   }, [empresaSeleccionada]);
 
   const confirmarCita = async (id) => {
+    const result = await showConfirm(
+      "¿Confirmar cita?",
+      "La cita cambiará a estado confirmada"
+    );
+
+    if (!result.isConfirmed) return;
+
     try {
       const res = await fetch(`${API_URL}/api/citas/${id}/confirmar`, {
         method: "PUT",
@@ -69,23 +79,39 @@ function CitasEmpresa() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Cita confirmada ✅");
+        await showSuccess("Cita confirmada", "La cita fue confirmada correctamente");
         cargarCitas(empresaSeleccionada);
       } else {
-        alert(data.error || "Error confirmando cita");
+        showError("Error", data.error || "Error confirmando cita");
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error", "Error conectando con el servidor");
     }
   };
 
-  const cancelarCita = async (id) => {
-    const confirmar = window.confirm("¿Seguro que deseas cancelar esta cita?");
-    if (!confirmar) return;
+  const cancelarCita = async (cita) => {
+    const fechaCita = new Date(cita.fecha);
+    const ahora = new Date();
+    const diferenciaHoras = (fechaCita - ahora) / (1000 * 60 * 60);
+
+    if (diferenciaHoras < 12) {
+      showWarning(
+        "No se puede cancelar",
+        "La empresa no puede cancelar una cita con menos de 12 horas de anticipación."
+      );
+      return;
+    }
+
+    const result = await showConfirm(
+      "¿Cancelar cita?",
+      "La cita cambiará a estado cancelada"
+    );
+
+    if (!result.isConfirmed) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/citas/${id}/cancelar`, {
+      const res = await fetch(`${API_URL}/api/citas/${cita.id}/cancelar`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`
@@ -95,20 +121,24 @@ function CitasEmpresa() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Cita cancelada correctamente");
+        await showSuccess("Cita cancelada", "La cita fue cancelada correctamente");
         cargarCitas(empresaSeleccionada);
       } else {
-        alert(data.error || "Error cancelando cita");
+        showError("Error", data.error || "Error cancelando cita");
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error", "Error conectando con el servidor");
     }
   };
 
   const completarCita = async (id) => {
-    const confirmar = window.confirm("¿Marcar esta cita como completada?");
-    if (!confirmar) return;
+    const result = await showConfirm(
+      "¿Completar cita?",
+      "La cita cambiará a estado completada"
+    );
+
+    if (!result.isConfirmed) return;
 
     try {
       const res = await fetch(`${API_URL}/api/citas/${id}/completar`, {
@@ -121,14 +151,44 @@ function CitasEmpresa() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Cita completada correctamente");
+        await showSuccess("Cita completada", "La cita fue marcada como completada");
         cargarCitas(empresaSeleccionada);
       } else {
-        alert(data.error || "Error completando cita");
+        showError("Error", data.error || "Error completando cita");
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error", "Error conectando con el servidor");
+    }
+  };
+
+  const eliminarCita = async (id) => {
+    const result = await showConfirm(
+      "¿Eliminar cita?",
+      "Esta acción eliminará la cita cancelada"
+    );
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/citas/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        await showSuccess("Cita eliminada", "La cita fue eliminada correctamente");
+        cargarCitas(empresaSeleccionada);
+      } else {
+        showError("Error", data.error || "No se pudo eliminar");
+      }
+    } catch (error) {
+      console.error(error);
+      showError("Error", "Error conectando con el servidor");
     }
   };
 
@@ -142,32 +202,6 @@ function CitasEmpresa() {
 
   const formatearFecha = (fecha) => {
     return new Date(fecha).toLocaleString();
-  };
-
-  const eliminarCita = async (id) => {
-    const confirmar = window.confirm("¿Eliminar esta cita cancelada?");
-    if (!confirmar) return;
-
-    try {
-      const res = await fetch(`${API_URL}/api/citas/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert("Cita eliminada correctamente");
-        cargarCitas(empresaSeleccionada);
-      } else {
-        alert(data.error || "No se pudo eliminar");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Error conectando con el servidor");
-    }
   };
 
   return (
@@ -226,7 +260,7 @@ function CitasEmpresa() {
                       <button
                         className="dashboard-button"
                         style={{ background: "#e74c3c" }}
-                        onClick={() => cancelarCita(cita.id)}
+                        onClick={() => cancelarCita(cita)}
                       >
                         Cancelar cita
                       </button>
@@ -246,12 +280,13 @@ function CitasEmpresa() {
                       <button
                         className="dashboard-button"
                         style={{ background: "#e74c3c" }}
-                        onClick={() => cancelarCita(cita.id)}
+                        onClick={() => cancelarCita(cita)}
                       >
                         Cancelar cita
                       </button>
                     </>
                   )}
+
                   {cita.estado === "cancelada" && (
                     <button
                       className="dashboard-button"

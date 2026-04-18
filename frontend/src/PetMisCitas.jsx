@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PetOwnerLayout from "./components/PetOwnerLayout";
 import LoadingModal from "./components/LoadingModal";
+import { showConfirm, showError, showSuccess, showWarning } from "./utils/alerts";
 import "./petOwner.css";
 
 function PetMisCitas() {
@@ -24,21 +25,17 @@ function PetMisCitas() {
         return;
       }
 
-      const res = await fetch(
-        `${API_URL}/api/citas/usuario/${user.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
+      const res = await fetch(`${API_URL}/api/citas/usuario/${user.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-      );
+      });
 
       const data = await res.json();
-
       setCitas(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error(error);
-      alert("Error cargando citas");
+      showError("Error", "No se pudieron cargar las citas");
     } finally {
       setLoading(false);
     }
@@ -51,16 +48,22 @@ function PetMisCitas() {
   const cancelarCita = async (cita) => {
     const fechaCita = new Date(cita.fecha);
     const ahora = new Date();
-
     const diferenciaHoras = (fechaCita - ahora) / (1000 * 60 * 60);
 
     if (diferenciaHoras < 3) {
-      alert("No puedes cancelar una cita con menos de 3 horas de anticipación.");
+      showWarning(
+        "No disponible",
+        "No puedes cancelar una cita con menos de 3 horas de anticipación."
+      );
       return;
     }
 
-    const confirmar = window.confirm("¿Seguro que deseas cancelar esta cita?");
-    if (!confirmar) return;
+    const result = await showConfirm(
+      "¿Cancelar cita?",
+      "La cita pasará al estado cancelada."
+    );
+
+    if (!result.isConfirmed) return;
 
     try {
       const res = await fetch(`${API_URL}/api/citas/${cita.id}/cancelar`, {
@@ -75,25 +78,27 @@ function PetMisCitas() {
       if (res.ok) {
         setCitas((prev) =>
           prev.map((item) =>
-            item.id === cita.id
-              ? { ...item, estado: "cancelada" }
-              : item
+            item.id === cita.id ? { ...item, estado: "cancelada" } : item
           )
         );
 
-        alert("Cita cancelada correctamente");
+        await showSuccess("Cita cancelada", "La cita se canceló correctamente");
       } else {
-        alert(data.error || "No se pudo cancelar la cita");
+        showError("Error", data.error || "No se pudo cancelar la cita");
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error", "Error conectando con el servidor");
     }
   };
 
   const eliminarCita = async (id) => {
-    const confirmar = window.confirm("¿Eliminar esta cita cancelada?");
-    if (!confirmar) return;
+    const result = await showConfirm(
+      "¿Eliminar cita?",
+      "Esta acción eliminará la cita cancelada."
+    );
+
+    if (!result.isConfirmed) return;
 
     try {
       const res = await fetch(`${API_URL}/api/citas/${id}`, {
@@ -107,13 +112,13 @@ function PetMisCitas() {
 
       if (res.ok) {
         setCitas((prev) => prev.filter((cita) => cita.id !== id));
-        alert("Cita eliminada correctamente");
+        await showSuccess("Cita eliminada", "La cita se eliminó correctamente");
       } else {
-        alert(data.error || "No se pudo eliminar la cita");
+        showError("Error", data.error || "No se pudo eliminar la cita");
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error", "Error conectando con el servidor");
     }
   };
 
@@ -136,10 +141,7 @@ function PetMisCitas() {
               <div key={cita.id} className="pet-cita-item">
                 <h3>{cita.servicio}</h3>
 
-                <p>
-                  📅{" "}
-                  {new Date(cita.fecha).toLocaleDateString()}
-                </p>
+                <p>📅 {new Date(cita.fecha).toLocaleDateString()}</p>
 
                 <p>
                   ⏰{" "}
@@ -159,10 +161,10 @@ function PetMisCitas() {
                       cita.estado === "pendiente"
                         ? "#f39c12"
                         : cita.estado === "confirmada"
-                          ? "#27ae60"
-                          : cita.estado === "cancelada"
-                            ? "#e74c3c"
-                            : "#3498db",
+                        ? "#27ae60"
+                        : cita.estado === "cancelada"
+                        ? "#e74c3c"
+                        : "#3498db",
                     fontWeight: "bold"
                   }}
                 >
@@ -177,6 +179,7 @@ function PetMisCitas() {
                     Cancelar cita
                   </button>
                 )}
+
                 {cita.estado === "cancelada" && (
                   <button
                     className="pet-cita-delete-button"

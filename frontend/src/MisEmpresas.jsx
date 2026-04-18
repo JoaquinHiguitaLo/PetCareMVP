@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "./DashboardLayout";
+import { showConfirm, showError, showSuccess } from "./utils/alerts";
 import "./dashboard.css";
 
 function MisEmpresas() {
@@ -35,6 +36,7 @@ function MisEmpresas() {
       }
     } catch (error) {
       console.error(error);
+      showError("Error", "No se pudieron cargar las empresas");
     }
   };
 
@@ -46,6 +48,19 @@ function MisEmpresas() {
     setForm({
       ...form,
       [e.target.name]: e.target.value
+    });
+  };
+
+  const limpiarFormulario = () => {
+    setForm({
+      nombre: "",
+      nombre_propietario: "",
+      documento: "",
+      direccion: "",
+      telefono: "",
+      correo: "",
+      descripcion: "",
+      categoria: ""
     });
   };
 
@@ -85,36 +100,32 @@ function MisEmpresas() {
       const data = await res.json();
 
       if (res.ok) {
-        alert(
+        await showSuccess(
+          editandoId ? "Empresa actualizada" : "Empresa creada",
           editandoId
-            ? "Empresa actualizada correctamente 🏢"
-            : "Empresa creada correctamente 🏢"
+            ? "La empresa se actualizó correctamente"
+            : "La empresa se registró correctamente"
         );
 
-        setForm({
-          nombre: "",
-          nombre_propietario: "",
-          documento: "",
-          direccion: "",
-          telefono: "",
-          correo: "",
-          descripcion: ""
-        });
-
+        limpiarFormulario();
         setEditandoId(null);
         cargarEmpresas();
       } else {
-        alert(data.error || "Error guardando empresa");
+        showError("Error", data.error || "Error guardando empresa");
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error", "Error conectando con el servidor");
     }
   };
 
   const handleEliminar = async (id) => {
-    const confirmar = window.confirm("¿Seguro que deseas eliminar esta empresa?");
-    if (!confirmar) return;
+    const result = await showConfirm(
+      "¿Eliminar empresa?",
+      "Esta acción no se puede deshacer"
+    );
+
+    if (!result.isConfirmed) return;
 
     try {
       const res = await fetch(`${API_URL}/api/empresas/${id}`, {
@@ -127,14 +138,17 @@ function MisEmpresas() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Empresa eliminada correctamente");
+        await showSuccess(
+          "Empresa eliminada",
+          "La empresa se eliminó correctamente"
+        );
         cargarEmpresas();
       } else {
-        alert(data.error || "Error eliminando empresa");
+        showError("Error", data.error || "Error eliminando empresa");
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error", "Error conectando con el servidor");
     }
   };
 
@@ -200,6 +214,7 @@ function MisEmpresas() {
               value={form.descripcion}
               onChange={handleChange}
             />
+
             <select
               className="dashboard-input"
               name="categoria"
@@ -216,7 +231,6 @@ function MisEmpresas() {
               <option value="Funerarias">Funerarias</option>
             </select>
 
-
             <button type="submit" className="dashboard-button">
               {editandoId ? "Actualizar empresa" : "Guardar empresa"}
             </button>
@@ -228,16 +242,7 @@ function MisEmpresas() {
                 style={{ background: "#6b7280", marginTop: "10px" }}
                 onClick={() => {
                   setEditandoId(null);
-                  setForm({
-                    nombre: "",
-                    nombre_propietario: "",
-                    documento: "",
-                    direccion: "",
-                    telefono: "",
-                    correo: "",
-                    descripcion: "",
-                    categoria: ""
-                  });
+                  limpiarFormulario();
                 }}
               >
                 Cancelar edición
@@ -259,6 +264,7 @@ function MisEmpresas() {
                 <p><strong>Dirección:</strong> {empresa.direccion}</p>
                 <p><strong>Teléfono:</strong> {empresa.telefono}</p>
                 <p><strong>Correo:</strong> {empresa.correo}</p>
+                <p><strong>Categoría:</strong> {empresa.categoria}</p>
                 <p><strong>Estado:</strong> {empresa.verificado ? "✅ Verificado" : "⏳ Pendiente"}</p>
 
                 <div className="dashboard-actions" style={{ marginTop: "10px" }}>

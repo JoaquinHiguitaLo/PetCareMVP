@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { showError, showSuccess, showWarning } from "./utils/alerts";
 import "./App.css";
 
 function ForgotPassword() {
@@ -18,7 +19,7 @@ function ForgotPassword() {
     if (loading) return;
 
     if (nuevaPassword !== confirmPassword) {
-      alert("Las contraseñas no coinciden");
+      showWarning("Contraseñas diferentes", "Las contraseñas no coinciden");
       return;
     }
 
@@ -39,15 +40,18 @@ function ForgotPassword() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Contraseña actualizada correctamente");
+        await showSuccess(
+          "Contraseña actualizada",
+          "Tu contraseña se actualizó correctamente"
+        );
         navigate("/");
       } else {
-        alert(data.error || "Error restableciendo contraseña");
+        showError("Error", data.error || "Error restableciendo contraseña");
         setLoading(false);
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error", "Error conectando con el servidor");
       setLoading(false);
     }
   };
