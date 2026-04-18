@@ -118,37 +118,3 @@ exports.actualizarEmpresa = async (req, res) => {
   }
 };
 
-exports.actualizarServicio = async (req, res) => {
-  try {
-    const servicioActualizado = await servicioService.actualizarServicio(
-      req.params.id,
-      req.body,
-      req.user.id
-    );
-
-    res.json({
-      message: "Servicio actualizado correctamente",
-      servicio: servicioActualizado
-    });
-  } catch (error) {
-    console.error("ERROR ACTUALIZANDO SERVICIO:", error);
-
-    if (error.message === "Servicio no encontrado") {
-      return res.status(404).json({ error: error.message });
-    }
-
-    if (error.message === "Empresa no encontrada") {
-      return res.status(404).json({ error: error.message });
-    }
-
-    if (error.message === "No autorizado") {
-      return res.status(403).json({ error: error.message });
-    }
-
-    if (error.message === "Ya existe un servicio con ese nombre en esta empresa") {
-      return res.status(400).json({ error: error.message });
-    }
-
-    res.status(500).json({ error: "Error actualizando servicio" });
-  }
-};

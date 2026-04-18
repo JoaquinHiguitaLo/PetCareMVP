@@ -13,7 +13,8 @@ function MisEmpresas() {
     direccion: "",
     telefono: "",
     correo: "",
-    descripcion: ""
+    descripcion: "",
+    categoria: ""
   });
 
   const API_URL = import.meta.env.VITE_API_URL;
@@ -57,7 +58,8 @@ function MisEmpresas() {
       direccion: empresa.direccion || "",
       telefono: empresa.telefono || "",
       correo: empresa.correo || "",
-      descripcion: empresa.descripcion || ""
+      descripcion: empresa.descripcion || "",
+      categoria: empresa.categoria || ""
     });
   };
 
@@ -198,6 +200,22 @@ function MisEmpresas() {
               value={form.descripcion}
               onChange={handleChange}
             />
+            <select
+              className="dashboard-input"
+              name="categoria"
+              value={form.categoria}
+              onChange={handleChange}
+              required
+            >
+              <option value="">Selecciona una categoría</option>
+              <option value="Veterinarias">Veterinarias</option>
+              <option value="Spas">Spas</option>
+              <option value="Tiendas">Tiendas</option>
+              <option value="Guarderías">Guarderías</option>
+              <option value="Entrenadores">Entrenadores</option>
+              <option value="Funerarias">Funerarias</option>
+            </select>
+
 
             <button type="submit" className="dashboard-button">
               {editandoId ? "Actualizar empresa" : "Guardar empresa"}
@@ -217,7 +235,8 @@ function MisEmpresas() {
                     direccion: "",
                     telefono: "",
                     correo: "",
-                    descripcion: ""
+                    descripcion: "",
+                    categoria: ""
                   });
                 }}
               >

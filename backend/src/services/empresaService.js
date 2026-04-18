@@ -21,7 +21,8 @@ exports.crearEmpresa = async (data, usuario_id) => {
     direccion: data.direccion,
     telefono: data.telefono,
     correo: data.correo,
-    descripcion: data.descripcion
+    descripcion: data.descripcion,
+    categoria: data.categoria
   });
 };
 

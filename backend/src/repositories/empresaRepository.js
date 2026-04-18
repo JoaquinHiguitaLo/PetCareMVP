@@ -8,14 +8,15 @@ exports.crear = async ({
   direccion,
   telefono,
   correo,
-  descripcion
+  descripcion,
+  categoria
 }) => {
   const result = await pool.query(
     `INSERT INTO empresas
-     (usuario_id, nombre, nombre_propietario, documento, direccion, telefono, correo, descripcion)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+     (usuario_id, nombre, nombre_propietario, documento, direccion, telefono, correo, descripcion, categoria)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8, $9)
      RETURNING *`,
-    [usuario_id, nombre, nombre_propietario, documento, direccion, telefono, correo, descripcion]
+    [usuario_id, nombre, nombre_propietario, documento, direccion, telefono, correo, descripcion, categoria]
   );
 
   return result.rows[0];
@@ -119,8 +120,9 @@ exports.actualizar = async (id, data) => {
          direccion = $4,
          telefono = $5,
          correo = $6,
-         descripcion = $7
-     WHERE id = $8
+         descripcion = $7,
+         categoria = $8
+     WHERE id = $9
      RETURNING *`,
     [
       data.nombre,
@@ -130,6 +132,7 @@ exports.actualizar = async (id, data) => {
       data.telefono,
       data.correo,
       data.descripcion,
+      data.categoria,
       id
     ]
   );
