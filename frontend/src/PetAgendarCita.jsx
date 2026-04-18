@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import {showError, showSucces} from "./utils/alerts";
+import {showError, showSuccess} from "./utils/alerts";
 import PetOwnerLayout from "./components/PetOwnerLayout";
 import LoadingModal from "./components/LoadingModal";
 import "./petOwner.css";

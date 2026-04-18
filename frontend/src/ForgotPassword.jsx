@@ -94,6 +94,7 @@ function ForgotPassword() {
     }
   };
 
+
   return (
     <div className="login-page">
       <div className="login-card">
@@ -189,7 +190,12 @@ function ForgotPassword() {
               type="button"
               className="dashboard-button"
               style={{ background: "#6b7280" }}
-              onClick={() => setStep(1)}
+              onClick={() => {
+                setStep(1);
+                setCodigo("");
+                setNuevaPassword("");
+                setConfirmPassword("");
+              }}
             >
               Volver
             </button>

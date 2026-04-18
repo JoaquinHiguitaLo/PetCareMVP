@@ -5,7 +5,8 @@ const {
   registerUser, 
   loginUser,
   resetPassword,
-  updateProfile 
+  updateProfile,
+  requestResetCode 
 } = require("../controllers/userController");
 
 router.get("/test-user", (req, res) => {
