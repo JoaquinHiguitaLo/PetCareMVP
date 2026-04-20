@@ -52,6 +52,7 @@ function BusinessBottomNav() {
         👤
         <span>Perfil</span>
       </button>
+
     </nav>
   );
 }

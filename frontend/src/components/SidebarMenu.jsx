@@ -68,6 +68,12 @@ function SidebarMenu({ user }) {
             📋 Citas recibidas
           </button>
         </nav>
+        <button
+          className={`sidebar-link ${activa("/dashboard/perfil") ? "active" : ""}`}
+          onClick={() => irA("/dashboard/perfil")}
+        >
+          👤 Perfil
+        </button>
 
         <div className="sidebar-footer">
           <button className="logout-button" onClick={cerrarSesion}>

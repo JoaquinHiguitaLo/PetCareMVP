@@ -67,6 +67,7 @@ exports.loginUser = async (req, res) => {
       id: user.id,
       nombre: user.nombre,
       email: user.email,
+      telefono: user.telefono,
       rol: user.rol
       }
     });

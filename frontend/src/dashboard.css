@@ -187,6 +187,55 @@ body {
   transform: translateX(0);
 }
 
+.business-profile-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.business-profile-avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #60a5fa, #2563eb);
+  color: white;
+  font-size: 2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.business-profile-info h2 {
+  margin: 0 0 6px 0;
+  font-size: 2rem;
+}
+
+.business-profile-info p {
+  margin: 0 0 10px 0;
+  color: #6b7280;
+}
+
+.business-profile-badge {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.business-profile-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: #374151;
+}
+
+
 @media (max-width: 900px) {
   .business-main {
     padding-left: 0;
@@ -273,6 +322,28 @@ body {
   .dashboard-actions .dashboard-button,
   .dashboard-button {
     width: 100%;
+  }
+   .business-profile-summary {
+    align-items: flex-start;
+  }
+
+  .business-profile-info h2 {
+    font-size: 1.6rem;
+  }
+  .business-profile-summary {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .business-profile-avatar {
+    width: 72px;
+    height: 72px;
+    font-size: 1.8rem;
+  }
+
+  .business-profile-info h2 {
+    font-size: 1.8rem;
+    line-height: 1.15;
   }
 }
 
