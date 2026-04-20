@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import SidebarMenu from "./components/SidebarMenu";
+import BusinessBottomNav from "./components/BusinessBottomNav";
+import "./dashboard.css";
 import "./sidebar.css";
 
 function DashboardLayout({ title, children }) {
@@ -9,43 +11,33 @@ function DashboardLayout({ title, children }) {
       ? JSON.parse(storedUser)
       : null;
 
-  const [sidebarVisible, setSidebarVisible] = useState(true);
-  const lastScrollY = useRef(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
 
   useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-
-      if (currentScrollY <= 10) {
-        setSidebarVisible(true);
-      } else if (currentScrollY > lastScrollY.current) {
-        setSidebarVisible(false);
-      } else {
-        setSidebarVisible(true);
-      }
-
-      lastScrollY.current = currentScrollY;
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 900);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
     <div className="layout-container">
-      <div className={`layout-sidebar-wrapper ${sidebarVisible ? "visible" : "hidden"}`}>
-        <SidebarMenu user={user} />
-      </div>
+      {!isMobile && (
+        <div className="layout-sidebar-wrapper visible">
+          <SidebarMenu user={user} />
+        </div>
+      )}
 
-      <main className={`layout-main ${sidebarVisible ? "" : "layout-main-expanded"}`}>
+      <main className="layout-main">
         <div className="layout-content">
           <h1 className="layout-title">{title}</h1>
           {children}
         </div>
       </main>
+
+      {isMobile && <BusinessBottomNav />}
     </div>
   );
 }

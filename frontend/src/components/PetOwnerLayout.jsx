@@ -1,9 +1,20 @@
+import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../petOwner.css";
 
 function PetOwnerLayout({ title, subtitle, children }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 900);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 900);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const irA = (ruta) => {
     navigate(ruta);
@@ -13,79 +24,134 @@ function PetOwnerLayout({ title, subtitle, children }) {
 
   return (
     <div className="pet-layout">
-      <div className="pet-desktop-shell">
-        <div className="pet-desktop-side">
-          <h2>PetCare</h2>
-          <p>
-            Plataforma orientada a centralizar servicios y productos para el cuidado de mascotas
-            en un solo entorno digital. Su propósito es conectar dueños de mascotas con veterinarias,
-            guarderías, tiendas, aseguradoras, parques, funerarias y otros actores del ecosistema pet-friendly,
-            permitiendo encontrar opciones confiables, comparables y ajustadas a las necesidades específicas de cada usuario.
-          </p>
-          <div className="pet-desktop-points">
-            <div className="pet-desktop-point">📱 Orientada a una experiencia mobile-first</div>
-            <div className="pet-desktop-point">🩺 Gestión de mascotas, citas e historia clínica</div>
-            <div className="pet-desktop-point">💬 Espacio para comunidad y crecimiento del producto</div>
-          </div>
-        </div>
+      <div className="pet-app-shell">
+        {!isMobile && (
+          <aside className="pet-desktop-sidebar">
+            <div className="pet-desktop-sidebar-header">
+              <h2>🐾 PetCare</h2>
+              <p>Pet Owner</p>
+            </div>
 
-        <div className="pet-screen">
-          <header className="pet-header">
-            <div className="pet-header-row">
-              <div>
-                <h1>{title}</h1>
-                {subtitle && <p>{subtitle}</p>}
+            <nav className="pet-desktop-sidebar-nav">
+              <button
+                className={`pet-desktop-sidebar-link ${activa("/pet/home") ? "active" : ""}`}
+                onClick={() => irA("/pet/home")}
+              >
+                🏠 Inicio
+              </button>
+
+              <button
+                className={`pet-desktop-sidebar-link ${activa("/pet/mascotas") ? "active" : ""}`}
+                onClick={() => irA("/pet/mascotas")}
+              >
+                🐶 Mascotas
+              </button>
+
+              <button
+                className={`pet-desktop-sidebar-link ${activa("/pet/mis-citas") ? "active" : ""}`}
+                onClick={() => irA("/pet/mis-citas")}
+              >
+                📅 Citas
+              </button>
+
+              <button
+                className={`pet-desktop-sidebar-link ${activa("/pet/perfil") ? "active" : ""}`}
+                onClick={() => irA("/pet/perfil")}
+              >
+                👤 Perfil
+              </button>
+            </nav>
+
+            <div className="pet-desktop-sidebar-footer">
+              <button
+                className="pet-desktop-logout"
+                onClick={() => {
+                  localStorage.removeItem("token");
+                  localStorage.removeItem("user");
+                  navigate("/");
+                }}
+              >
+                Cerrar sesión
+              </button>
+            </div>
+          </aside>
+        )}
+
+        <main className="pet-main">
+          <div className="pet-main-content">
+            {!isMobile && (
+              <div className="pet-desktop-hero">
+                <p className="pet-desktop-hero-label">Panel pet owner</p>
+                <h1 className="pet-desktop-hero-title">{title}</h1>
+                {subtitle && (
+                  <p className="pet-desktop-hero-subtitle">{subtitle}</p>
+                )}
               </div>
+            )}
 
-              {title === "Mis Mascotas" && (
-                <button
-                  className="pet-header-plus"
-                  onClick={() => navigate("/pet/crear-mascota")}
-                >
-                  +
-                </button>
+            <div className="pet-screen">
+              {isMobile && (
+                <header className="pet-header">
+                  <div className="pet-header-row">
+                    <div>
+                      <h1>{title}</h1>
+                      {subtitle && <p>{subtitle}</p>}
+                    </div>
+
+                    {title === "Mis Mascotas" && (
+                      <button
+                        className="pet-header-plus"
+                        onClick={() => navigate("/pet/crear-mascota")}
+                      >
+                        +
+                      </button>
+                    )}
+                  </div>
+                </header>
+              )}
+
+              <main className={`pet-content ${isMobile ? "pet-mobile-wrapper" : ""}`}>
+                {children}
+              </main>
+
+              {isMobile && (
+                <nav className="pet-bottom-nav">
+                  <button
+                    className={activa("/pet/mascotas") ? "active" : ""}
+                    onClick={() => irA("/pet/mascotas")}
+                  >
+                    🐶
+                    <span>Mascotas</span>
+                  </button>
+
+                  <button
+                    className={activa("/pet/home") ? "active" : ""}
+                    onClick={() => irA("/pet/home")}
+                  >
+                    🏠
+                    <span>Inicio</span>
+                  </button>
+
+                  <button
+                    className={activa("/pet/mis-citas") ? "active" : ""}
+                    onClick={() => irA("/pet/mis-citas")}
+                  >
+                    📅
+                    <span>Citas</span>
+                  </button>
+
+                  <button
+                    className={activa("/pet/perfil") ? "active" : ""}
+                    onClick={() => irA("/pet/perfil")}
+                  >
+                    👤
+                    <span>Perfil</span>
+                  </button>
+                </nav>
               )}
             </div>
-          </header>
-
-          <main className="pet-content pet-mobile-wrapper">
-            {children}
-          </main>
-
-          <nav className="pet-bottom-nav">
-            <button
-              className={activa("/pet/mascotas") ? "active" : ""}
-              onClick={() => irA("/pet/mascotas")}
-            >
-              🐶
-              <span>Mascotas</span>
-            </button>
-
-            <button
-              className={activa("/pet/home") ? "active" : ""}
-              onClick={() => irA("/pet/home")}
-            >
-              🏠
-              <span>Inicio</span>
-            </button>
-
-            <button
-              className={activa("/pet/mis-citas") ? "active" : ""}
-              onClick={() => irA("/pet/mis-citas")}
-            >
-              📅
-              <span>Citas</span>
-            </button>
-
-            <button
-              className={activa("/pet/perfil") ? "active" : ""}
-              onClick={() => irA("/pet/perfil")}
-            >
-              👤
-              <span>Perfil</span>
-            </button>
-          </nav>
-        </div>
+          </div>
+        </main>
       </div>
     </div>
   );

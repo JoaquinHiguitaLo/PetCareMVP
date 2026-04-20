@@ -19,8 +19,6 @@ function PetHome() {
         placeholder="🔍 Buscar veterinarias, spas, tiendas..."
       />
 
-      <div style={{ height: "18px" }} />
-
       <div className="pet-card">
         <h2>Categorías</h2>
 

@@ -49,10 +49,7 @@ exports.getCitasPorEmpresa = async (req, res) => {
 
 exports.cancelarCita = async (req, res) => {
   try {
-    const cita = await citaService.cancelarCita(
-      req.params.id,
-      req.user.rol
-    );
+    const cita = await citaService.cancelarCita(req.params.id, req.user.rol);
 
     res.json({
       message: "Cita cancelada",
@@ -61,8 +58,11 @@ exports.cancelarCita = async (req, res) => {
   } catch (error) {
     console.error("ERROR CANCELANDO CITA:", error);
 
+    if (error.message === "Cita no encontrada") {
+      return res.status(404).json({ error: error.message });
+    }
+
     if (
-      error.message === "Cita no encontrada" ||
       error.message === "No puedes cancelar una cita con menos de 3 horas de anticipación" ||
       error.message === "La empresa no puede cancelar una cita con menos de 12 horas de anticipación"
     ) {
