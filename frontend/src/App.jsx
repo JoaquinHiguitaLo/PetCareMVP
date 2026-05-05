@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { showError } from "./utils/alerts";
+import ComponenteJuaco from "./components/ComponenteJuaco";
 import "./App.css";
 
 function App() {
@@ -58,6 +59,15 @@ function App() {
         <p className="login-subtitle">Cuida a tu mejor amigo</p>
 
         <p className="login-helper">Inicia sesión para continuar</p>
+
+        <button
+          type="button"
+          className="login-submit-btn"
+          style={{ marginBottom: "18px" }}
+          onClick={() => navigate("/componente-juaco")}
+        >
+          Avance de Juaco
+        </button>
 
         <form onSubmit={handleLogin} className="login-form">
           <div className="login-input-group">
