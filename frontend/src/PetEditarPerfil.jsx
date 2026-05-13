@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PetOwnerLayout from "./components/PetOwnerLayout";
 import LoadingModal from "./components/LoadingModal";
 import "./petOwner.css";
+import { showError } from "./utils/alerts";
 
 function PetEditarPerfil() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ function PetEditarPerfil() {
 
   const guardarCambios = async () => {
     if (!storedUser?.id) {
-      alert("No hay usuario activo");
+      showError("No hay usuario activo");
       return;
     }
 
@@ -53,11 +54,11 @@ function PetEditarPerfil() {
         alert("Perfil actualizado correctamente");
         navigate("/pet/perfil");
       } else {
-        alert(data.error || "Error actualizando perfil");
+        showError(data.error || "Error actualizando perfil");
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error conectando con el servidor");
     } finally {
       setGuardando(false);
     }

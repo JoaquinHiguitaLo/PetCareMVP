@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PetOwnerLayout from "./components/PetOwnerLayout";
 import "./petOwner.css";
+import { showError, showSuccess } from "./utils/alerts";
 
 function PetMascotas() {
   const [mascotas, setMascotas] = useState([]);
@@ -59,13 +60,13 @@ function PetMascotas() {
           setMascotaAbierta(null);
         }
 
-        alert("Mascota eliminada correctamente");
+        showSuccess("Mascota eliminada correctamente");
       } else {
-        alert(data.error || "Error eliminando mascota");
+        showError(data.error || "Error eliminando mascota");
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error conectando con el servidor");
     }
   };
 
@@ -205,7 +206,7 @@ function PetMascotas() {
 
                   <div
                     className="pet-pet-action pet-pet-action-blue"
-                    onClick={() => alert("Luego conectamos carnet de vacunación")}
+                    onClick={() => showError("Aun no se ha conectado, se espera agregar funcionalidad de carnet de vacunación")}
                   >
                     <strong>📘 Carnet de Vacunación</strong>
                     <p>Consulta vacunas registradas</p>
@@ -221,7 +222,7 @@ function PetMascotas() {
 
                   <div
                     className="pet-pet-action pet-pet-action-orange"
-                    onClick={() => alert("Luego conectamos documentos")}
+                    onClick={() => showError("Aun no se ha conectado, se espera agregar funcionalidad de documentos")}
                   >
                     <strong>📄 Documentos</strong>
                     <p>Certificados y registros</p>

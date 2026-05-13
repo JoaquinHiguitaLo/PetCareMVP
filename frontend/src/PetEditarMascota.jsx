@@ -4,6 +4,7 @@ import PetOwnerLayout from "./components/PetOwnerLayout";
 import PetForm from "./components/PetForm";
 import LoadingModal from "./components/LoadingModal";
 import "./petOwner.css";
+import { showError, showSuccess } from "./utils/alerts";
 
 function PetEditarMascota() {
   const { id } = useParams();
@@ -62,7 +63,7 @@ function PetEditarMascota() {
       }
     } catch (error) {
       console.error(error);
-      alert("Error cargando la mascota");
+      showError("Error cargando la mascota");
     } finally {
       setLoadingMascota(false);
     }
@@ -124,7 +125,7 @@ function PetEditarMascota() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Mascota actualizada correctamente");
+        showSuccess("Mascota actualizada correctamente");
         navigate("/pet/mascotas");
       } else {
         alert(data.error || "Error actualizando mascota");
@@ -132,7 +133,7 @@ function PetEditarMascota() {
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error conectando con el servidor");
       setGuardando(false);
     }
   };

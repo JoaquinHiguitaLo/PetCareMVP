@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PetOwnerLayout from "./components/PetOwnerLayout";
 import PetForm from "./components/PetForm";
 import "./petOwner.css";
+import { showError, showSuccess } from "./utils/alerts";
 
 function PetCrearMascota() {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ function PetCrearMascota() {
     
     try {
       if (!user?.id) {
-        alert("No hay usuario activo");
+        showError("No hay usuario activo");
         return;
       }
 
@@ -88,14 +89,14 @@ function PetCrearMascota() {
       const data = await res.json();
 
       if (res.ok) {
-        alert("Mascota registrada correctamente");
+        showSuccess("Mascota registrada correctamente");
         navigate("/pet/mascotas");
       } else {
-        alert(data.error || "Error registrando mascota");
+        showError(data.error || "Error registrando mascota");
       }
     } catch (error) {
       console.error(error);
-      alert("Error conectando con el servidor");
+      showError("Error conectando con el servidor");
       setGuardando(false);
     }
   };
