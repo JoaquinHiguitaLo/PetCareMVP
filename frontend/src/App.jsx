@@ -59,16 +59,7 @@ function App() {
         <p className="login-subtitle">Cuida a tu mejor amigo</p>
 
         <p className="login-helper">Inicia sesión para continuar</p>
-
-        <button
-          type="button"
-          className="login-submit-btn"
-          style={{ marginBottom: "18px" }}
-          onClick={() => navigate("/componente-juaco")}
-        >
-          Avance de Juaco
-        </button>
-
+        
         <form onSubmit={handleLogin} className="login-form">
           <div className="login-input-group">
             <span className="login-input-icon">✉️</span>

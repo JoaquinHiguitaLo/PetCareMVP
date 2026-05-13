@@ -29,7 +29,7 @@ function PetOwnerLayout({ title, subtitle, children }) {
           <aside className="pet-desktop-sidebar">
             <div className="pet-desktop-sidebar-header">
               <h2>🐾 PetCare</h2>
-              <p>Pet Owner</p>
+              <p>Dueño de mascotas</p>
             </div>
 
             <nav className="pet-desktop-sidebar-nav">

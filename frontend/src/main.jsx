@@ -24,6 +24,7 @@ import Profile from "./Profile.jsx";
 import PetEditarPerfil from "./PetEditarPerfil.jsx";
 import ProfileBusiness from "./ProfileBusiness.jsx";
 import ComponenteJuaco from "./components/ComponenteJuaco.jsx";
+import PetHistoriaClinica from "./PetHistoriaClinica.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 
@@ -54,6 +55,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Route path="/pet/editar-perfil" element={<PetEditarPerfil />} />
       <Route path="/dashboard/perfil" element={<ProfileBusiness />} />
       <Route path="/componente-juaco" element={<ComponenteJuaco />} />
+      <Route path="/pet/historia-clinica/:mascotaId" element={<PetHistoriaClinica />} />
     </Routes>
   </BrowserRouter>
 );

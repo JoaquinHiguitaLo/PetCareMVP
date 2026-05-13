@@ -7,6 +7,8 @@ function PetMascotas() {
   const [mascotas, setMascotas] = useState([]);
   const [mascotaAbierta, setMascotaAbierta] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [busqueda, setBusqueda] = useState("");
+
   const navigate = useNavigate();
   const API_URL = import.meta.env.VITE_API_URL;
 
@@ -25,6 +27,7 @@ function PetMascotas() {
 
       const res = await fetch(`${API_URL}/api/pets/user/${user.id}`);
       const data = await res.json();
+
       setMascotas(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error(error);
@@ -43,17 +46,19 @@ function PetMascotas() {
       const res = await fetch(`${API_URL}/api/pets/${id}`, {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
+          Authorization: `Bearer ${token}`
+        }
       });
 
       const data = await res.json();
 
       if (res.ok) {
         setMascotas((prev) => prev.filter((mascota) => mascota.id !== id));
+
         if (mascotaAbierta === id) {
           setMascotaAbierta(null);
         }
+
         alert("Mascota eliminada correctamente");
       } else {
         alert(data.error || "Error eliminando mascota");
@@ -72,11 +77,65 @@ function PetMascotas() {
     cargarMascotas();
   }, []);
 
+  const mascotasFiltradas = mascotas.filter((mascota) => {
+    const texto = `${mascota.nombre || ""} ${mascota.raza || ""} ${mascota.tipo || ""}`.toLowerCase();
+    return texto.includes(busqueda.toLowerCase());
+  });
+
   return (
     <PetOwnerLayout
       title="Mis Mascotas"
       subtitle="Gestiona la información de tus peludos"
     >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          gap: "15px",
+          marginBottom: "20px",
+          flexWrap: "wrap"
+        }}
+      >
+        <input
+          type="text"
+          placeholder="🔍 Buscar mascota..."
+          value={busqueda}
+          onChange={(e) => setBusqueda(e.target.value)}
+          style={{
+            flex: 1,
+            minWidth: "250px",
+            padding: "14px 18px",
+            borderRadius: "14px",
+            border: "1px solid #ddd",
+            fontSize: "15px",
+            outline: "none",
+            background: "#fff",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.04)"
+          }}
+        />
+
+        <button
+          onClick={() => navigate("/pet/crear-mascota")}
+          style={{
+            background: "linear-gradient(135deg, #7b2ff7, #d500f9)",
+            color: "white",
+            border: "none",
+            borderRadius: "14px",
+            padding: "14px 22px",
+            fontWeight: "600",
+            fontSize: "15px",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            boxShadow: "0 6px 18px rgba(123,47,247,0.3)",
+            transition: "0.2s"
+          }}
+        >
+          ➕ Registrar mascota
+        </button>
+      </div>
 
       {loading ? (
         <div className="pet-card">
@@ -87,9 +146,21 @@ function PetMascotas() {
         <div className="pet-card">
           <h2>No tienes mascotas registradas</h2>
           <p>Agrega una mascota para comenzar a usar el sistema.</p>
+
+          <button
+            className="pet-primary-button"
+            onClick={() => navigate("/pet/crear-mascota")}
+          >
+            ➕ Registrar mascota
+          </button>
+        </div>
+      ) : mascotasFiltradas.length === 0 ? (
+        <div className="pet-card">
+          <h2>Sin resultados</h2>
+          <p>No encontramos mascotas con esa búsqueda.</p>
         </div>
       ) : (
-        mascotas.map((mascota) => {
+        mascotasFiltradas.map((mascota) => {
           const abierta = mascotaAbierta === mascota.id;
 
           return (
@@ -111,6 +182,7 @@ function PetMascotas() {
                   <div className="pet-pet-main">
                     <h3>{mascota.nombre}</h3>
                     <p className="pet-pet-race">{mascota.raza}</p>
+
                     <div className="pet-pet-meta">
                       <span>{mascota.edad} años</span>
                       <span>•</span>
@@ -135,30 +207,24 @@ function PetMascotas() {
                     className="pet-pet-action pet-pet-action-blue"
                     onClick={() => alert("Luego conectamos carnet de vacunación")}
                   >
-                    <div>
-                      <strong>📘 Carnet de Vacunación</strong>
-                      <p>Consulta vacunas registradas</p>
-                    </div>
+                    <strong>📘 Carnet de Vacunación</strong>
+                    <p>Consulta vacunas registradas</p>
                   </div>
 
                   <div
                     className="pet-pet-action pet-pet-action-green"
-                    onClick={() => navigate("/dashboard/historia-clinica")}
+                    onClick={() => navigate(`/pet/historia-clinica/${mascota.id}`)}
                   >
-                    <div>
-                      <strong>🩺 Historia Clínica</strong>
-                      <p>Ver historial médico</p>
-                    </div>
+                    <strong>🩺 Historia Clínica</strong>
+                    <p>Ver historial médico</p>
                   </div>
 
                   <div
                     className="pet-pet-action pet-pet-action-orange"
                     onClick={() => alert("Luego conectamos documentos")}
                   >
-                    <div>
-                      <strong>📄 Documentos</strong>
-                      <p>Certificados y registros</p>
-                    </div>
+                    <strong>📄 Documentos</strong>
+                    <p>Certificados y registros</p>
                   </div>
 
                   <div className="pet-pet-info-box">
@@ -189,8 +255,7 @@ function PetMascotas() {
             </div>
           );
         })
-      )
-      }
+      )}
     </PetOwnerLayout>
   );
 }
