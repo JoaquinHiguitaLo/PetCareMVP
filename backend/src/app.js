@@ -17,7 +17,8 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "https://petcare-jade.vercel.app",
-  "https://petcare-5qvs83v0-joaquinhiguitalo-projects.vercel.app"
+  "https://petcare-5qvs83v0-joaquinhiguitalo-projects.vercel.app",
+  "https://pet-care-mvp-phi.vercel.app"
 ];
 
 app.use(cors({
